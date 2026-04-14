@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaccion {
+  id                     Int     @id @default(autoincrement())
+  canal                  String?
+  fecha                  String?
+  hora                   String?
+  marca                  String?
+  tipoTransaccion        String? @map("tipo_transaccion")
+  noTarjeta              String? @map("no_tarjeta")
+  noAfiliado             String? @map("no_afiliado")
+  respuesta              String?
+  error                  String?
+  noAutorizacion         String? @map("no_autorizacion")
+  referencia             String?
+  moneda                 String?
+  monto                  String?
+  itbis                  String?
+  dcc                    String?
+  tarifaDcc              String? @map("tarifa_dcc")
+  monedaDcc              String? @map("moneda_dcc")
+  monedaDccAlfanumerica  String? @map("moneda_dcc_alfanumerica")
+  montoDcc               String? @map("monto_dcc")
+  tasaCambioDcc          String? @map("tasa_cambio_dcc")
+  margenDcc              String? @map("margen_dcc")
+
+  @@map("transacciones")
+}
