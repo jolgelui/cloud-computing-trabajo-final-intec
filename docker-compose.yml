@@ -37,12 +37,12 @@ services:
     build:
       context: ./app
       args:
-        VITE_API_BASE: /api
+        VITE_API_BASE: http://api:3000
     image: proyecto-app:latest
     container_name: proyecto_app
     ports:
       # Host 8081 avoids conflict with other services on 8080
-      - "${APP_PORT:-8081}:80"
+      - "${APP_PORT:-8081}:8080"
     depends_on:
       - api
 

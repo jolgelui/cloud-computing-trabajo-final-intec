@@ -32,3 +32,24 @@ output "cloud_run_service_account" {
   description = "Service account email for Cloud Run"
   value       = google_service_account.cloud_run_sa.email
 }
+
+# React App Outputs
+output "artifact_registry_app_url" {
+  description = "Artifact Registry repository URL for React app"
+  value       = "${var.gcp_region}-docker.pkg.dev/${var.gcp_project_id}/proyecto-app"
+}
+
+output "cloud_run_app_service_url" {
+  description = "Cloud Run service public URL for React app"
+  value       = google_cloud_run_service.app.status[0].url
+}
+
+output "cloud_run_app_service_name" {
+  description = "Cloud Run service name for React app"
+  value       = google_cloud_run_service.app.name
+}
+
+output "cloud_run_app_service_account" {
+  description = "Service account email for React app Cloud Run"
+  value       = google_service_account.cloud_run_app_sa.email
+}
