@@ -14,6 +14,7 @@ import {
 } from 'recharts'
 import { apiFetch } from '../api/client'
 import { DateRangeFilter } from '../components/DateRangeFilter'
+import { MarcaFilter } from '../components/MarcaFilter'
 import { buildTransaccionesListUrl } from '../lib/dateRangeQuery'
 import type { Transaccion, TransaccionListResponse } from '../types/transaccion'
 import './Dashboard.css'
@@ -45,6 +46,7 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   const [fechaDesde, setFechaDesde] = useState('')
   const [fechaHasta, setFechaHasta] = useState('')
+  const [selectedMarcas, setSelectedMarcas] = useState<string[]>([])
 
   useEffect(() => {
     let cancelled = false
@@ -68,27 +70,47 @@ export function Dashboard() {
     }
   }, [fechaDesde, fechaHasta])
 
+  const allMarcas = useMemo(() => {
+    const marcas = new Set<string>()
+    for (const r of rows) {
+      const marca = (r.marca ?? '').trim()
+      if (marca) marcas.add(marca)
+    }
+    return Array.from(marcas).sort()
+  }, [rows])
+
+  useEffect(() => {
+    if (selectedMarcas.length === 0 && allMarcas.length > 0) {
+      setSelectedMarcas(allMarcas)
+    }
+  }, [allMarcas])
+
+  const filteredRows = useMemo(() => {
+    if (selectedMarcas.length === 0) return rows
+    return rows.filter((r) => selectedMarcas.includes((r.marca ?? '').trim()))
+  }, [rows, selectedMarcas])
+
   const approved = useMemo(
-    () => rows.filter((r) => (r.respuesta ?? '').trim() === '00').length,
-    [rows],
+    () => filteredRows.filter((r) => (r.respuesta ?? '').trim() === '00').length,
+    [filteredRows],
   )
-  const declined = useMemo(() => Math.max(0, rows.length - approved), [rows, approved])
+  const declined = useMemo(() => Math.max(0, filteredRows.length - approved), [filteredRows, approved])
   const volumeSample = useMemo(
-    () => rows.reduce((sum, r) => sum + parseMonto(r.monto), 0),
-    [rows],
+    () => filteredRows.reduce((sum, r) => sum + parseMonto(r.monto), 0),
+    [filteredRows],
   )
 
   const byRespuesta = useMemo(
-    () => aggregateBy(rows, (r) => (r.respuesta ?? '').trim() || '(vacío)'),
-    [rows],
+    () => aggregateBy(filteredRows, (r) => (r.respuesta ?? '').trim() || '(vacío)'),
+    [filteredRows],
   )
   const byMarca = useMemo(
-    () => aggregateBy(rows, (r) => (r.marca ?? '').trim() || '(sin marca)'),
-    [rows],
+    () => aggregateBy(filteredRows, (r) => (r.marca ?? '').trim() || '(sin marca)'),
+    [filteredRows],
   )
   const byFecha = useMemo(() => {
     const map = new Map<string, number>()
-    for (const r of rows) {
+    for (const r of filteredRows) {
       const f = (r.fecha ?? '').trim() || '(sin fecha)'
       map.set(f, (map.get(f) ?? 0) + parseMonto(r.monto))
     }
@@ -96,7 +118,7 @@ export function Dashboard() {
       .map(([fecha, monto]) => ({ fecha, monto }))
       .sort((a, b) => b.monto - a.monto)
       .slice(0, 10)
-  }, [rows])
+  }, [filteredRows])
 
   if (loading) {
     return <div className="panel muted">Cargando métricas…</div>
@@ -113,7 +135,7 @@ export function Dashboard() {
     <div className="dashboard">
       <h1 className="page-title">Dashboard</h1>
       <p className="page-sub">
-        Vista rápida basada en las últimas {rows.length} filas cargadas
+        Vista rápida basada en las últimas {filteredRows.length} filas filtradas
         {total != null ? ` de ${total} en total.` : '.'}
       </p>
 
@@ -128,6 +150,8 @@ export function Dashboard() {
         }}
         disabled={loading}
       />
+
+      <MarcaFilter rows={rows} selectedMarcas={selectedMarcas} onChange={setSelectedMarcas} />
 
       <section className="widgets">
         <article className="widget stat">

@@ -1,0 +1,80 @@
+.marca-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filter-header label {
+  font-weight: 600;
+  color: #334155;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-button {
+  padding: 0.5rem 1rem;
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.filter-button:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.filter-button:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.marca-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.marca-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  transition: background-color 0.15s;
+}
+
+.marca-option:hover {
+  background-color: #e2e8f0;
+}
+
+.marca-checkbox {
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+}
+
+.marca-option span {
+  color: #334155;
+  font-size: 0.875rem;
+}
